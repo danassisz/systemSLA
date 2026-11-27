@@ -11,11 +11,13 @@ public record TicketResponse (
         PrioridadeTicket prioridade,
         String solicitante,
         LocalDateTime criadoEm,
-        LocalDateTime prazoSla
+        LocalDateTime prazoSla,
+        LocalDateTime resolvidoEm
+
 ) {
     public static TicketResponse from(Ticket t) {
         return new TicketResponse(t.getId(), t.getTitulo(), t.getDescricao(),
                 t.getStatus(), t.getPrioridade(), t.getSolicitante(),
-                t.getCriadoEm(), t.getPrazoSla());
+                t.getCriadoEm(), t.getPrazoSla(), t.getResolvidoEm());
     }
 }

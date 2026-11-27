@@ -38,4 +38,10 @@ public class TicketController {
     public List<TicketResponse> listar() {
         return service.listar().stream().map(TicketResponse::from).toList();
     }
+
+    @PatchMapping("/{id}/status")
+    public TicketResponse atualizarStatus(@PathVariable Long id,
+                                          @Valid @RequestBody AtualizarStatusRequest request) {
+        return TicketResponse.from(service.atualizarStatus(id, request.status()));
+    }
 }

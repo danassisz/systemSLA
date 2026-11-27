@@ -39,4 +39,7 @@ public class Ticket {
 
     @Column(nullable = false)
     private LocalDateTime prazoSla;
+
+    private LocalDateTime resolvidoEm;
+
 }

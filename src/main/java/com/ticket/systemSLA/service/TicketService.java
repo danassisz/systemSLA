@@ -1,11 +1,12 @@
 package com.ticket.systemSLA.service;
 
 import com.ticket.systemSLA.dto.TicketRequest;
+import com.ticket.systemSLA.exception.TransicaoInvalida;
 import com.ticket.systemSLA.model.*;
 import com.ticket.systemSLA.repository.TicketRepository;
-import org.springframework.http.HttpStatus;
+import com.ticket.systemSLA.exception.RecursoNaoEncontrado;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,10 +37,28 @@ public class TicketService {
 
     public Ticket buscarPorId(Long id) {
         return repository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket não encontrado"));
+                new RecursoNaoEncontrado("Ticket " + id + " não encontrado"));
     }
 
     public List<Ticket> listar() {
         return repository.findAll();
+    }
+
+    public Ticket atualizarStatus(Long id, StatusTicket novoStatus) {
+        Ticket ticket = buscarPorId(id);
+
+        if (!ticket.getStatus().podeIrPara(novoStatus)) {
+            throw new TransicaoInvalida (
+                    "Não é possível mudar de " + ticket.getStatus() + " para " + novoStatus);
+        }
+
+        ticket.setStatus(novoStatus);
+        if (novoStatus == StatusTicket.RESOLVIDO) {
+            ticket.setResolvidoEm(LocalDateTime.now());
+        }
+        if (novoStatus == StatusTicket.EM_ANDAMENTO) {
+            ticket.setResolvidoEm(null); // chamado reaberto
+        }
+        return repository.save(ticket);
     }
 }
